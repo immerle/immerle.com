@@ -4106,7 +4106,10 @@ paths:
         - discovery
   /cover/{id}:
     get:
-      description: Returns the cover image for a track or album id, optionally resized.
+      description: >-
+        Returns the cover image for a track or album id, optionally resized. For
+        a chart-playlist cover (dynamically generated), locale picks the label
+        text's language.
       parameters:
         - description: Track or album id
           in: path
@@ -4119,6 +4122,11 @@ paths:
           name: size
           schema:
             type: integer
+        - description: Label language for a chart-playlist cover (e.g. \
+          in: query
+          name: locale
+          schema:
+            type: string
       responses:
         '200':
           content:
