@@ -5568,8 +5568,8 @@ paths:
     get:
       description: >-
         Returns the caller's personal auto-generated playlists (top of the
-        month, on repeat, forgotten favorites, random) that currently have at
-        least one track.
+        month, on repeat, forgotten favorites, random, recommended) that
+        currently have at least one track.
       responses:
         '200':
           content:
