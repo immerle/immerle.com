@@ -44,6 +44,14 @@ components:
         language:
           example: fr
           type: string
+        listenBrainzToken:
+          description: >-
+            ListenBrainzToken is the caller's personal ListenBrainz API token,
+            when
+
+            set (empty means ListenBrainz scrobbling is off).
+          example: 00000000-0000-0000-0000-000000000000
+          type: string
         username:
           example: bob
           type: string
@@ -524,6 +532,23 @@ components:
           type: array
           uniqueItems: false
       type: object
+    immerle.LastFmAdminDTO:
+      properties:
+        configured:
+          example: false
+          type: boolean
+        enabled:
+          example: false
+          type: boolean
+      type: object
+    immerle.LastFmStatusDTO:
+      properties:
+        connected:
+          type: boolean
+        username:
+          example: bob
+          type: string
+      type: object
     immerle.LibraryStatsDTO:
       properties:
         albums:
@@ -699,6 +724,21 @@ components:
       type: object
     immerle.PublicPlaylistDTO:
       properties:
+        autoPlaylistKind:
+          description: >-
+            AutoPlaylistKind identifies a server-generated playlist's stable
+            kind —
+
+            "Tendances de la semaine" (autoplaylists.AutoPlaylistKinds) or a
+            kworb
+
+            chart (charts.SourceInstanceID) — for clients to render a translated
+
+            label instead of the (French-only) stored Name. Empty for every
+            other
+
+            public playlist.
+          type: string
         comment:
           type: string
         coverArt:
@@ -1032,6 +1072,17 @@ components:
           type: boolean
         username:
           example: kilian
+          type: string
+      type: object
+    immerle.UserSummaryDTO:
+      properties:
+        displayName:
+          example: Bob Marley
+          type: string
+        id:
+          type: string
+        username:
+          example: bob
           type: string
       type: object
     immerle.WrappedCountDTO:
@@ -1404,6 +1455,27 @@ components:
         username:
           type: string
       type: object
+    immerle.lastFmConnectFinishRequest:
+      properties:
+        token:
+          type: string
+      type: object
+    immerle.lastFmConnectStartResponse:
+      properties:
+        authUrl:
+          type: string
+        token:
+          type: string
+      type: object
+    immerle.lastFmUpdateRequest:
+      properties:
+        apiKey:
+          type: string
+        apiSecret:
+          type: string
+        enabled:
+          type: boolean
+      type: object
     immerle.loginRequest:
       properties:
         device:
@@ -1619,6 +1691,23 @@ components:
       type: object
     immerle.playlistView:
       properties:
+        autoPlaylistKind:
+          description: >-
+            AutoPlaylistKind identifies a server-generated playlist's stable
+            kind —
+
+            an autoplaylists.AutoPlaylistKinds value ("Top du mois",
+            "Découvertes"...)
+
+            or a charts.SourceInstanceID chart's own external id ("fr_weekly",
+
+            "global_weekly"...) — for clients to render a translated label
+            instead
+
+            of the (French-only) stored Name. Empty for every other playlist
+
+            (user-created, genre/decade, hub-imported).
+          type: string
         changedAt:
           type: string
         collaborative:
@@ -1999,6 +2088,8 @@ components:
         email:
           type: string
         language:
+          type: string
+        listenBrainzToken:
           type: string
       type: object
     immerle.updateJamRequest:
@@ -2841,6 +2932,53 @@ paths:
       security:
         - BearerAuth: []
       summary: Toggle the Hall of Fame feature
+      tags:
+        - admin
+  /admin/lastfm:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.LastFmAdminDTO'
+          description: OK
+      security:
+        - BearerAuth: []
+      summary: Get the Last.fm scrobbling feature state
+      tags:
+        - admin
+    put:
+      description: >-
+        Admin only. Partial update — only fields present are changed. The API
+        key/secret are write-only: the response never echoes them back.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                - $ref: '#/components/schemas/immerle.lastFmUpdateRequest'
+                  summary: body
+                  description: Fields to change
+        description: Fields to change
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.LastFmAdminDTO'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Bad Request
+      security:
+        - BearerAuth: []
+      summary: Update Last.fm scrobbling settings
       tags:
         - admin
   /admin/logs/stream:
@@ -4420,6 +4558,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/immerle.errorResponse'
           description: Unauthorized
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Too Many Requests
       summary: Create a device session (issue a JWT)
       tags:
         - devices
@@ -5455,7 +5599,7 @@ paths:
     patch:
       description: >-
         Partial update — only fields present are changed. Lets a user set their
-        display name and email themselves.
+        display name, email and ListenBrainz token themselves.
       requestBody:
         content:
           application/json:
@@ -5613,6 +5757,136 @@ paths:
       summary: List favorites
       tags:
         - catalog
+  /me/lastfm:
+    delete:
+      responses:
+        '204':
+          description: disconnected
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Unauthorized
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Internal Server Error
+      security:
+        - BearerAuth: []
+      summary: Disconnect Last.fm
+      tags:
+        - users
+    get:
+      description: Reports whether the caller has connected their Last.fm account.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.LastFmStatusDTO'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Unauthorized
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Internal Server Error
+      security:
+        - BearerAuth: []
+      summary: Last.fm connection status
+      tags:
+        - users
+  /me/lastfm/connect/finish:
+    post:
+      description: >-
+        Exchanges a token approved via the auth URL for a permanent session key,
+        and stores it on the caller's account. Returns 400 not_authorized if the
+        token hasn't been approved yet.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                - $ref: '#/components/schemas/immerle.lastFmConnectFinishRequest'
+                  summary: body
+                  description: Approved auth token
+        description: Approved auth token
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.LastFmStatusDTO'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Unauthorized
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Service Unavailable
+      security:
+        - BearerAuth: []
+      summary: Finish connecting a Last.fm account
+      tags:
+        - users
+  /me/lastfm/connect/start:
+    post:
+      description: >-
+        Requests a fresh auth token and returns the URL the caller must open to
+        approve it, the first step of Last.fm's desktop-auth handshake.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.lastFmConnectStartResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Unauthorized
+        '502':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Bad Gateway
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Service Unavailable
+      security:
+        - BearerAuth: []
+      summary: Start connecting a Last.fm account
+      tags:
+        - users
   /me/password:
     put:
       requestBody:
@@ -7697,6 +7971,39 @@ paths:
       summary: Revoke an API token
       tags:
         - tokens
+  /users:
+    get:
+      description: >-
+        Returns every user's public identity (id, username, display name) so any
+        authenticated caller can browse to a profile.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/immerle.UserSummaryDTO'
+                  type: array
+                type: object
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Unauthorized
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/immerle.errorResponse'
+          description: Internal Server Error
+      security:
+        - BearerAuth: []
+      summary: List users
+      tags:
+        - users
   /users/{username}:
     get:
       description: >-
