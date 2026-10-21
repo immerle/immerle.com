@@ -165,6 +165,13 @@ components:
         saleItemType:
           example: p
           type: string
+      required:
+        - artistName
+        - itemTitle
+        - itemType
+        - purchased
+        - saleItemId
+        - saleItemType
       type: object
     immerle.BandcampJobDTO:
       properties:
@@ -202,6 +209,17 @@ components:
         updatedAt:
           example: '2026-07-18T21:43:00Z'
           type: string
+      required:
+        - artistName
+        - attempts
+        - createdAt
+        - id
+        - itemTitle
+        - itemType
+        - saleItemId
+        - saleItemType
+        - status
+        - updatedAt
       type: object
     immerle.BandcampJobsDTO:
       properties:
@@ -222,6 +240,8 @@ components:
           type: string
         needsReconnect:
           type: boolean
+      required:
+        - connected
       type: object
     immerle.CapabilitiesDTO:
       properties:
@@ -319,6 +339,10 @@ components:
         ticketmasterConfigured:
           example: false
           type: boolean
+      required:
+        - enabled
+        - skiddleConfigured
+        - ticketmasterConfigured
       type: object
     immerle.CreateTokenDTO:
       properties:
@@ -563,6 +587,9 @@ components:
         enabled:
           example: false
           type: boolean
+      required:
+        - configured
+        - enabled
       type: object
     immerle.LastFmStatusDTO:
       properties:
@@ -571,6 +598,8 @@ components:
         username:
           example: bob
           type: string
+      required:
+        - connected
       type: object
     immerle.LibraryStatsDTO:
       properties:
@@ -686,6 +715,10 @@ components:
         plays:
           example: 1234
           type: integer
+      required:
+        - listenSeconds
+        - playlists
+        - plays
       type: object
     immerle.ProviderCapabilityDTO:
       properties:
@@ -696,6 +729,9 @@ components:
           description: Key is one of trackSearch, artists, playlists, playlistSearch.
           example: trackSearch
           type: string
+      required:
+        - enabled
+        - key
       type: object
     immerle.ProviderDTO:
       properties:
@@ -1043,6 +1079,13 @@ components:
         mode:
           example: minor
           type: string
+      required:
+        - bpm
+        - camelot
+        - danceability
+        - energy
+        - key
+        - mode
       type: object
     immerle.SonicDuplicatesDTO:
       properties:
@@ -1079,6 +1122,12 @@ components:
             current algorithm.
           example: 12000
           type: integer
+      required:
+        - analyzed
+        - available
+        - enabled
+        - failed
+        - total
       type: object
     immerle.SubscribeRequestDTO:
       properties:
@@ -1177,6 +1226,9 @@ components:
         username:
           example: bob
           type: string
+      required:
+        - id
+        - username
       type: object
     immerle.WrappedCountDTO:
       properties:
@@ -1278,6 +1330,11 @@ components:
           type: boolean
         username:
           type: string
+      required:
+        - admin
+        - id
+        - scrobblingEnabled
+        - username
       type: object
     immerle.albumView:
       properties:
@@ -1306,6 +1363,13 @@ components:
           uniqueItems: false
         year:
           type: integer
+      required:
+        - artist
+        - artistId
+        - duration
+        - id
+        - name
+        - songCount
       type: object
     immerle.apiError:
       properties:
@@ -1322,6 +1386,9 @@ components:
           additionalProperties: {}
           description: i18n interpolation values; always present ({} when none)
           type: object
+      required:
+        - code
+        - message
       type: object
     immerle.artistView:
       properties:
@@ -1340,6 +1407,10 @@ components:
           type: string
         starred:
           type: string
+      required:
+        - albumCount
+        - id
+        - name
       type: object
     immerle.bandcampConnectRequest:
       properties:
@@ -1376,6 +1447,13 @@ components:
           type: string
         url:
           type: string
+      required:
+        - description
+        - id
+        - imageUrl
+        - status
+        - title
+        - url
       type: object
     immerle.cleanupUpdateRequest:
       properties:
@@ -1408,6 +1486,8 @@ components:
           uniqueItems: false
         type:
           type: string
+      required:
+        - type
       type: object
     immerle.concertsUpdateRequest:
       properties:
@@ -1480,11 +1560,25 @@ components:
           type: string
         title:
           type: string
+      required:
+        - channelId
+        - contentType
+        - description
+        - duration
+        - id
+        - publishDate
+        - size
+        - status
+        - streamable
+        - suffix
+        - title
       type: object
     immerle.errorResponse:
       properties:
         error:
           $ref: '#/components/schemas/immerle.apiError'
+      required:
+        - error
       type: object
     immerle.favoritesView:
       properties:
@@ -1508,6 +1602,8 @@ components:
       properties:
         enabled:
           type: boolean
+      required:
+        - enabled
       type: object
     immerle.fieldError:
       properties:
@@ -1515,6 +1611,9 @@ components:
           type: string
         message:
           type: string
+      required:
+        - field
+        - message
       type: object
     immerle.genreView:
       properties:
@@ -1524,6 +1623,10 @@ components:
           type: string
         songCount:
           type: integer
+      required:
+        - albumCount
+        - name
+        - songCount
       type: object
     immerle.hallOfFameAddRequest:
       properties:
@@ -1554,6 +1657,9 @@ components:
             $ref: '#/components/schemas/immerle.songView'
           type: array
           uniqueItems: false
+      required:
+        - changedAt
+        - createdAt
       type: object
     immerle.jamInviteRequest:
       properties:
@@ -1571,6 +1677,9 @@ components:
           type: string
         token:
           type: string
+      required:
+        - authUrl
+        - token
       type: object
     immerle.lastFmUpdateRequest:
       properties:
@@ -1606,6 +1715,8 @@ components:
           type: integer
         text:
           type: string
+      required:
+        - text
       type: object
     immerle.lyricsView:
       properties:
@@ -1616,6 +1727,8 @@ components:
           uniqueItems: false
         synced:
           type: boolean
+      required:
+        - synced
       type: object
     immerle.nowPlayingView:
       properties:
@@ -1625,6 +1738,10 @@ components:
           $ref: '#/components/schemas/immerle.songView'
         username:
           type: string
+      required:
+        - minutesAgo
+        - song
+        - username
       type: object
     immerle.participantView:
       properties:
@@ -1632,6 +1749,9 @@ components:
           type: string
         role:
           type: string
+      required:
+        - name
+        - role
       type: object
     immerle.passwordRequest:
       properties:
@@ -1773,6 +1893,11 @@ components:
 
             sending a command that would never be applied.
           type: boolean
+      required:
+        - playing
+        - position
+        - shuffle
+        - targetOnline
       type: object
     immerle.playbackTargetView:
       properties:
@@ -1782,6 +1907,9 @@ components:
           type: string
         name:
           type: string
+      required:
+        - id
+        - name
       type: object
     immerle.playlistCreateRequest:
       properties:
@@ -1883,6 +2011,18 @@ components:
             $ref: '#/components/schemas/immerle.songView'
           type: array
           uniqueItems: false
+      required:
+        - changedAt
+        - collaborative
+        - createdAt
+        - duration
+        - federated
+        - id
+        - name
+        - owner
+        - public
+        - songCount
+        - subscribed
       type: object
     immerle.podcastCreateRequest:
       properties:
@@ -1914,6 +2054,14 @@ components:
           type: boolean
         title:
           type: string
+      required:
+        - album
+        - artist
+        - coverArt
+        - duration
+        - id
+        - remote
+        - title
       type: object
     immerle.radioRequest:
       properties:
@@ -1981,6 +2129,8 @@ components:
         type:
           description: artist|album|song|playlist|radio|spotifyPlaylist
           type: string
+      required:
+        - type
       type: object
     immerle.searchView:
       properties:
@@ -2040,6 +2190,11 @@ components:
           type: string
         viewCount:
           type: integer
+      required:
+        - createdAt
+        - id
+        - url
+        - viewCount
       type: object
     immerle.smartPlaylistListView:
       properties:
@@ -2061,6 +2216,12 @@ components:
           $ref: '#/components/schemas/models.SmartRules'
         updatedAt:
           type: string
+      required:
+        - createdAt
+        - id
+        - name
+        - rules
+        - updatedAt
       type: object
     immerle.smartRequest:
       properties:
@@ -2088,6 +2249,8 @@ components:
           type: boolean
         song:
           $ref: '#/components/schemas/immerle.songView'
+      required:
+        - local
       type: object
     immerle.songView:
       properties:
@@ -2186,6 +2349,15 @@ components:
           type: string
         year:
           type: integer
+      required:
+        - album
+        - albumId
+        - artist
+        - artistId
+        - coverArt
+        - duration
+        - id
+        - title
       type: object
     immerle.spotifyPlaylistView:
       description: >-
@@ -2208,6 +2380,9 @@ components:
         owner:
           example: Spotify
           type: string
+      required:
+        - id
+        - name
       type: object
     immerle.startImportRequest:
       properties:
@@ -2248,6 +2423,17 @@ components:
           type: string
         streamUrl:
           type: string
+      required:
+        - builtin
+        - country
+        - coverUrl
+        - deletable
+        - hasCover
+        - homepageUrl
+        - id
+        - liked
+        - name
+        - streamUrl
       type: object
     immerle.streamURLs:
       properties:
@@ -2255,6 +2441,9 @@ components:
           type: string
         stream:
           type: string
+      required:
+        - download
+        - stream
       type: object
     immerle.toggleRequest:
       properties:
@@ -2325,6 +2514,10 @@ components:
           type: string
         value:
           type: string
+      required:
+        - field
+        - op
+        - value
       type: object
     models.SmartRules:
       properties:
@@ -2356,6 +2549,11 @@ components:
             Sort is a whitelisted sort key (e.g. "random", "playCount",
             "recentlyAdded").
           type: string
+      required:
+        - limit
+        - match
+        - order
+        - sort
       type: object
   securitySchemes:
     BearerAuth:
